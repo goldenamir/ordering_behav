@@ -1,9 +1,7 @@
 # ordering_behav:
 
-##### Information about the assignment is in the pdf file which is called "OrederinData README_V2.pdf".
+### The requirements.txt file should list all python libraries that the application depend on, and they will be install using:
+$ pip install -r requirements.txt
 
-#### Jupyter codes for the assignment is in the SQL+pandas-sa.ipynb.
-
-
-## Running the application
+### Running the application
 $ python main.py -p [path to big file]
