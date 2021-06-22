@@ -23,6 +23,7 @@ usage from data_modified, it has been saved as .csv file.
 
 '''
 
+
 def orderingFunc(Path):
     data = pd.read_csv(Path, sep='\t', header=None, usecols=[0, 1])
     data.info(verbose=False, memory_usage='deep')
@@ -122,36 +123,38 @@ def lookupFunc():
 
     num_iter_data_modified = 0
 
-    m = 0  # for counting every chunk_size
+    chunk_el = 0  # for counting every chunk_size
 
     # For loop in the all rows of sorted dataframe
 
-    for i in range(data_modified.shape[0]):
+    for sub_data_modified in range(data_modified.shape[0]):
 
         # values in data_modified in first and second columns
-        j = data_modified.iloc[i, 0:3]
-        ID = str(j[1])
+        column_data_modified = data_modified.iloc[sub_data_modified, 0:3]
+        ID = str(column_data_modified[1])
 
-        DATE = j[2]
+        DATE = column_data_modified[2]
 
-        for k in range(no_chunk_sql):
+        for sub_chunk_sql in range(no_chunk_sql):
             # chunk of sql and its related number
-            chunk_sql_count = 'chunk_sql' + str(k)
+            chunk_sql_count = 'chunk_sql' + str(sub_chunk_sql)
 
-            a = con.execute('SELECT * from '+(chunk_sql_count)+' where id = '+"'"+str(ID)+"'"+' AND date = '+str(DATE))
+            a = con.execute('SELECT * from '+(chunk_sql_count) +
+                            ' where id = '+"'"+str(ID)+"'"+' AND date = '+str(DATE))
             b = a.fetchall()
 
             if len(b) != 0:
                 # print('[INFO]... result has been fund!')
                 # print('################################################################')
-                data_temp.iloc[m, 0] = b[0][1]
-                data_temp.iloc[m, 1] = int(b[0][2])
-                data_temp.iloc[m, 2] = b[0][3]
+                data_temp.iloc[chunk_el, 0] = b[0][1]
+                data_temp.iloc[chunk_el, 1] = int(b[0][2])
+                data_temp.iloc[chunk_el, 2] = b[0][3]
 
                 # Deleting a row from the database
                 #con.execute("DELETE FROM %s where id == %s AND date == %s" % (chunk_sql_count, ID, DATE))
-                con.execute('DELETE  from '+(chunk_sql_count)+' where id = '+"'"+str(ID)+"'"+' AND date = '+str(DATE))
-                m += 1
+                con.execute('DELETE  from '+(chunk_sql_count) +
+                            ' where id = '+"'"+str(ID)+"'"+' AND date = '+str(DATE))
+                chunk_el += 1
                 num_iter_data_modified += 1
                 if num_iter_data_modified % chunk_size == 0:
                     # data_temp.to_csv(
@@ -160,7 +163,8 @@ def lookupFunc():
                                      index=False, header=False, sep='\t')
                     data_frame_no += 1
                     data_temp = pd.DataFrame(Zeros)
-                    m -= chunk_size
+                    chunk_el = 0
                     num_iter_data_modified = 0
-                    print('[INFO]... ' + str(data_frame_no) + ' has been shaped!')
+                    print('[INFO]... ' + str(data_frame_no) +
+                          ' has been shaped!')
                 break
