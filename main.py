@@ -19,6 +19,5 @@ if __name__ == '__main__':
     ap.add_argument('-p', '--pat', required=True,
                     help='Path to the file')
 
-
     args = ap.parse_args()
     main()
